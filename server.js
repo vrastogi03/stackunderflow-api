@@ -99,19 +99,21 @@ app.post('/askques',(req,res)=>{
     knex.transaction(trx=>{
         return trx('student').where('id',askedby)
         .increment('quesasked',1)
-        .returning('id')
+        .returning('*')
         .catch(err=>res.status(400).json('unable to register2'))
         .then(stud_id=>{
+           
             return trx('question')
             .returning('*')
             .insert({
-                askedby: stud_id[0],
-                question: question
+                askedby: stud_id[0].id,
+                question: question,
+                askedbyname: stud_id[0].name
             })
             .then(ques=>{
                 res.json(ques[0])
             })
-            .catch(err=>res.status(400).json('unable to register'))
+            .catch(err=>console.log(err))
         })
         .then(trx.commit)
         .catch(trx.rollback)})
@@ -124,15 +126,16 @@ app.put('/ansques',(req,res)=>{
     knex.transaction(trx=>{
         return trx('teacher').where('id',answeredby)
         .increment('quesanswered',1)
-        .returning('id')
+        .returning('*')
         .catch(err=>res.status(400).json('unable to register2'))
         .then(teach_id=>{
             return trx('question')
             .returning('*')
-            .where('id',teach_id[0])
+            .where('id',id)
             .update({
-                answeredby: answeredby,
-                answer:answer
+                answeredby: teach_id[0].id,
+                answer:answer,
+                answeredbyname: teach_id[0].name
             })
             .then(ques=>{
                 res.json(ques[0])
@@ -147,6 +150,24 @@ app.put('/ansques',(req,res)=>{
 
 app.get('/getques',(req,res)=>{
     knex.select('*').from('question')
+    .then(ques=>{
+        res.json(ques);
+    })
+})
+
+app.get('/getansques',(req,res)=>{
+    knex.select('*').from('question').whereNot({
+        answer: 'Not Answered'
+    })
+    .then(ques=>{
+        res.json(ques);
+    })
+})
+
+app.get('/getunansques',(req,res)=>{
+    knex.select('*').from('question').where({
+        answer: 'Not Answered'
+    })
     .then(ques=>{
         res.json(ques);
     })
