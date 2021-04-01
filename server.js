@@ -9,7 +9,7 @@ const knex = require('knex')({
         ssl: {
           rejectUnauthorized: false
         }
-    }
+
 }); 
 
 const app = express();
@@ -22,10 +22,13 @@ app.get('/',(req,res)=>{
     res.json('success');
 })
 
-app.post('/delete',(req,res)=>{
+app.delete('/delete',(req,res)=>{
     knex('question')
     .where('id','=',req.body.id)
+    .returning('*')
     .del()
+    .then(ques=> res.json(ques))
+    .catch(err => res.status(400).json('wrong credentials'))
 })
 
 app.post('/signinstudent',(req,res)=>{
