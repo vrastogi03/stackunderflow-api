@@ -9,7 +9,7 @@ const knex = require('knex')({
         ssl: {
           rejectUnauthorized: false
         }
-
+    }
 }); 
 
 const app = express();
