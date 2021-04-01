@@ -20,7 +20,6 @@ app.use(cors());
 
 app.get('/',(req,res)=>{
     res.json('success');
-    console.log('success')
 })
 
 app.post('/signinstudent',(req,res)=>{
