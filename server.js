@@ -22,6 +22,12 @@ app.get('/',(req,res)=>{
     res.json('success');
 })
 
+app.post('/delete',(req,res)=>{
+    knex('question')
+    .where('id','=',req.body.id)
+    .del()
+})
+
 app.post('/signinstudent',(req,res)=>{
     knex.select('email','hash').from('login')
     .where('email','=',req.body.email)
